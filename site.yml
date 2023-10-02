@@ -2,19 +2,34 @@
 
 - hosts: all
   become: true
-  tasks: 
+  pre_tasks: 
 
+  - name: install updates (CentOS)
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: install updates (Ubuntu)
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+ 
+- hosts: web_servers
+  become: true
+  tasks:
+ 
   - name: install apache and php for Ubuntu servers
     apt:
-      name:
+      name: 
         - apache2
         - libapache2-mod-php
       state: latest
-      update_cache: yes
-   when: ansible_distribution == "Ubuntu"
+    when: ansible_distribution == "Ubuntu"
 
   - name: install apache and php for CentOS servers
-    dnf: 
+    dnf:
       name:
         - httpd
         - php
